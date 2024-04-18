@@ -1,15 +1,16 @@
 package controllers
 
 import models.Product
-import models.dto.ProductDTO
+import models.dto.{GetProductDTO, ProductDTO}
 import models.services.ProductService
-import play.api.data.Forms.{nonEmptyText, number}
+import play.api.data.Forms.{boolean, nonEmptyText, number}
 import play.api.data.{Form, Forms, Mapping}
+import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, Controller}
 
 object ProductController extends Controller {
-  val productsService = ProductService
+  private val productsService = ProductService
 
   def getProducts(title: String): Action[AnyContent] = Action {
     if (title.isEmpty) {

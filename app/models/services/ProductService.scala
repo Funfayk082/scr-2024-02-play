@@ -1,23 +1,25 @@
 package models.services
 
 import models._
-import models.dto.ProductDTO
+import models.dto.{GetProductDTO, ProductDTO, ProductItemDTO}
 
 import scala.collection.mutable._
 
 
 object ProductService {
   var products: MutableList[Product] = MutableList[Product]()
-  var productsItems: MutableList[ProductItem] = MutableList[ProductItem]()
+  private val productItemService = ProductItemService
 
   def saveProduct(productDto: ProductDTO): Product = {
-    if (products.exists(p => p.id.raw == productDto.id)) {
-      throw new RuntimeException("Product already exists")
-    }
+    if (!products.exists(p => p.id.raw == productDto.id)) {
     products += Product(
       ProductId(productDto.id),
       ProductTitle(productDto.title),
       ProductPrice(productDto.price)
+    )
+  }
+    productItemService.addProductItem(
+      ProductItemDTO(productDto.id, productDto.price)
     )
     products.last
   }
@@ -44,17 +46,28 @@ object ProductService {
     true
   }
 
-  def findAllProducts(): List[Product] = {
-    products.toList
-  }
-
-  def findProductsByTitle(title: String): List[Product] = {
-    val result: MutableList[Product] = MutableList[Product]()
+  def findAllProducts(): List[GetProductDTO] = {
+    val productItems = productItemService.getProductItems()
+    val result = MutableList[GetProductDTO]()
     products.foreach(p => {
-      if (p.title.raw == title) {
-        result += p
-      }
+      productItems.find(pi => {
+        if(pi.id.raw == p.id.raw) {
+          result += GetProductDTO(
+            p.id.raw,
+            p.title.raw,
+            p.price.raw,
+            pi.amount.raw,
+            pi.isInStock.raw)
+          true
+        } else {
+          false
+        }
+      })
     })
     result.toList
+  }
+
+  def findProductsByTitle(title: String): List[GetProductDTO] = {
+    findAllProducts().filter(p => p.title == title)
   }
 }
