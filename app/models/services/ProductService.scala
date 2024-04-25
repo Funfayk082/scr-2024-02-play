@@ -47,7 +47,7 @@ object ProductService {
   }
 
   def findAllProducts(): List[GetProductDTO] = {
-    val productItems = productItemService.getProductItems()
+    val productItems = productItemService.getProductItems
     val result = MutableList[GetProductDTO]()
     products.foreach(p => {
       productItems.find(pi => {
