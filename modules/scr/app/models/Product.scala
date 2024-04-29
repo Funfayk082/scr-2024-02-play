@@ -1,11 +1,11 @@
 package models
 
-import play.api.libs.functional.syntax.{functionalCanBuildApplicative, toFunctionalBuilderOps, unlift}
+import org.squeryl.KeyedEntity
 import play.api.libs.json.{JsPath, Json, Reads, Writes}
 import play.api.mvc.PathBindable
 
 
-case class Product(var id: ProductId, var title: ProductTitle, var price: ProductPrice)
+case class Product(var id: ProductId, var title: ProductTitle, var price: ProductPrice) extends KeyedEntity[ProductId]
 
 object Product {
 

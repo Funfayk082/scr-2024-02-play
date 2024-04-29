@@ -2,7 +2,7 @@ package models.dto
 
 import play.api.libs.json.{Json, Reads, Writes}
 
-case class GetProductDTO(id: String, title: String, price: Int, amount: Int, isInStock: Boolean)
+case class GetProductDTO(id: String, title: String, price: Double, amount: Int, isInStock: Boolean)
 
 object GetProductDTO {
   implicit val writes: Writes[GetProductDTO] = Json.writes[GetProductDTO]

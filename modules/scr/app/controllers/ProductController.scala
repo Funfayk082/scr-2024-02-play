@@ -1,53 +1,54 @@
 package controllers
 
-import models.Product
-import models.dto.{GetProductDTO, ProductDTO}
+import com.google.inject.Inject
+import models.dto.ProductDTO
 import models.services.ProductService
-import play.api.data.Forms.{boolean, nonEmptyText, number}
+import play.api.data.Forms.{nonEmptyText, text}
 import play.api.data.{Form, Forms, Mapping}
 import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, Controller}
 
-object ProductController extends Controller {
-  private val productsService = ProductService
+class ProductController @Inject()(val productService: ProductService) extends Controller {
 
   def getProducts(title: String): Action[AnyContent] = Action {
     if (title.isEmpty) {
-      Ok(Json.toJson(productsService.findAllProducts()))
+      Ok(Json.toJson(productService.findAllProducts()))
     } else {
-      Ok(Json.toJson(productsService.findProductsByTitle(title)))
+      Ok(Json.toJson(productService.findProductsByTitle(title)))
     }
   }
 
   val mapping: Mapping[ProductDTO] = Forms.mapping(
     "id" -> nonEmptyText,
     "title" -> nonEmptyText,
-    "price" -> number
+    "price" -> text.transform((f1: String) => f1.toDouble, (f2: Double) => f2.toString)
   )(ProductDTO.apply)(ProductDTO.unapply)
 
   val form: Form[ProductDTO] = Form(mapping)
 
   def saveProduct: Action[AnyContent] = Action { implicit rc =>
-    var productDTO = ProductDTO("", "", 0)
     form.bindFromRequest.fold(
       _ => BadRequest,
-      dto =>
-        productDTO = dto
+      dto => {
+        productService.saveProduct(dto)
+        Ok(Json.toJson("Product saved"))
+      }
     )
-    Ok(Json.toJson(productsService.saveProduct(productDTO)))
   }
 
   def updateProduct(): Action[AnyContent] = Action { implicit rc =>
     form.bindFromRequest.fold(
       _ => BadRequest,
-      dto =>
-        Ok(Json.toJson(productsService.updateProduct(dto)))
+      dto => {
+        productService.updateProduct(dto)
+        Ok(Json.toJson("Product updated"))
+      }
     )
   }
 
   def deleteProduct(id: String): Action[AnyContent] = Action {
-    productsService.deleteProduct(id)
+    productService.deleteProduct(id)
     Ok("Product deleted")
   }
 }

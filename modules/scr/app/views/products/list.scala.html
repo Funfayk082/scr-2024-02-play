@@ -1,4 +1,5 @@
-@(products: List[models.Product])
+@import models.Product
+@(products: List[Product])
 
 @showProduct(p: models.Product) = {
     <li>@p.title @p.price</li>

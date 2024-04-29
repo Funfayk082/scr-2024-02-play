@@ -1,5 +1,6 @@
 package models
 
+import org.squeryl.KeyedEntity
 import play.api.libs.json.{Json, Reads, Writes}
 import play.api.mvc.PathBindable
 
@@ -9,18 +10,21 @@ case class ProductItem(
                         var amount: ProductItemAmount,
                         var isInStock: ProductItemIsInStock)
 
+
 object ProductItem {
   implicit val reads: Reads[ProductItem] = Json.reads[ProductItem]
   implicit val writes: Writes[ProductItem] = Json.writes[ProductItem]
 }
 
 case class ProductItemId(raw: String)
+
 object ProductItemId {
   implicit val reads: Reads[ProductItemId] = Json.reads[ProductItemId]
   implicit val writes: Writes[ProductItemId] = Json.writes[ProductItemId]
 }
 
 case class ProductItemPrice(raw: Int)
+
 object ProductItemPrice {
   implicit val productPrice: PathBindable[ProductItemPrice] = new PathBindable[ProductItemPrice] {
     override def bind(key: String, value: String): Either[String, ProductItemPrice] =
@@ -34,6 +38,7 @@ object ProductItemPrice {
 }
 
 case class ProductItemAmount(var raw: Int)
+
 object ProductItemAmount {
   implicit val productPrice: PathBindable[ProductItemAmount] = new PathBindable[ProductItemAmount] {
     override def bind(key: String, value: String): Either[String, ProductItemAmount] =
@@ -47,6 +52,7 @@ object ProductItemAmount {
 }
 
 case class ProductItemIsInStock(raw: Boolean)
+
 object ProductItemIsInStock {
   implicit val productItemIsInStock: PathBindable[ProductItemIsInStock] = new PathBindable[ProductItemIsInStock] {
     override def bind(key: String, value: String): Either[String, ProductItemIsInStock] =
